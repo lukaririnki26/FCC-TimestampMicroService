@@ -19,9 +19,33 @@ app.get("/", function (req, res) {
 });
 
 
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+// API endpoint for timestamp conversion
+app.get("/api/:date?", function (req, res) {
+  let dateString = req.params.date;
+  let dateObj;
+  
+  // If no date parameter provided, use current time
+  if (!dateString) {
+    dateObj = new Date();
+  } else {
+    // Try to parse the date string
+    // Check if it's a valid Unix timestamp (all digits)
+    if (/^\d+$/.test(dateString)) {
+      dateObj = new Date(parseInt(dateString));
+    } else {
+      dateObj = new Date(dateString);
+    }
+  }
+  
+  // Check if the date is valid
+  if (dateObj.toString() === 'Invalid Date') {
+    res.json({ error: "Invalid Date" });
+  } else {
+    res.json({
+      unix: dateObj.getTime(),
+      utc: dateObj.toUTCString()
+    });
+  }
 });
 
 
